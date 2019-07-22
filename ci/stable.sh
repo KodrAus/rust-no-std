@@ -6,3 +6,4 @@ cargo build
 cargo build --features std
 
 cargo test
+cargo test --features std
