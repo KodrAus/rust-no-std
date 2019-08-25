@@ -1,35 +1,39 @@
-// Declaring our library as `no-std` unconditionally lets us be consistent
-// in how we `use` items from `std` or `core`
-#![no_std]
+// Declare our library as `no-std` unless the user opts in for std
+// features.
+#![cfg_attr(not(feature = "std"), no_std)]
 
-// We always pull in `std` during tests, because it's just easier
-// to write tests when you can assume you're on a capable platform
-#[cfg(any(feature = "std", test))]
-#[macro_use]
-extern crate std;
+// We always pull in `std` during tests, because it's just easier to
+// write tests when you can assume you're on a capable platform
+#[cfg(all(test, not(feature = "std")))]
+compile_error!("Can only run tests with --feature std");
 
-// When we're building for a no-std target, we pull in `core`, but alias
-// it as `std` so the `use` statements are the same between `std` and `core`.
-#[cfg(all(not(feature = "std"), not(test)))]
-#[macro_use]
-extern crate core as std;
+// Pull in a lightweight no-std "compatibility layer" in order to
+// avoid having to trouble ourselves with supporting both std and
+// core.
+extern crate no_std_compat as std;
 
-use crate::std::fmt;
+// We often also have to import the prelude to obtain all the standard
+// functions, something that is normally automatically injected by the
+// compiler. On std this isn't needed, but usually it can be imported
+// unconditionally either way.
+
+// use std::prelude::v1::*;
+
+use std::fmt;
 
 pub fn write(mut w: impl fmt::Write, v: impl fmt::Debug) -> fmt::Result {
     write!(w, "{:?}", v)
 }
 
-// When we are building with `std` there may be additional features
-// our library supports.
-#[cfg(feature = "std")]
-mod std_support {
-    use crate::{
-        std::{
-            string::String,
-            fmt,
-        },
-        write,
+// When we are building with memory allocations or the standard
+// library (which includes memory allocations), there may be
+// additional features our library supports.
+#[cfg(any(feature = "alloc", feature = "std"))]
+mod alloc_support {
+    use crate::write;
+    use std::{
+        string::String,
+        fmt,
     };
 
     pub fn to_string(v: impl fmt::Debug) -> String {
@@ -39,7 +43,7 @@ mod std_support {
         buf
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, feature = "std"))]
     mod tests {
         use super::*;
 
@@ -50,14 +54,17 @@ mod std_support {
     }
 }
 
-#[cfg(feature = "std")]
-pub use self::std_support::*;
+#[cfg(any(feature = "alloc", feature = "std"))]
+pub use self::alloc_support::*;
 
-#[cfg(test)]
+#[cfg(all(test, feature = "std"))]
 mod tests {
     use super::*;
 
-    use crate::std::string::String;
+    // We also don't need to use the prelude when compiling with std,
+    // which we are when we're doing tests.
+
+    // use std::prelude::v1::*;
 
     #[test]
     fn it_works() {

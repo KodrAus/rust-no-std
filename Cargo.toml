@@ -5,8 +5,11 @@ authors = ["Ashley Mannix <ashleymannix@live.com.au>"]
 publish = false
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+no-std-compat = "0.2.0"
 
 [features]
-# enable support for the standard library
-std = []
+# enable support for memory allocations
+alloc = ["no-std-compat/alloc"]
+# enable support for the complete standard library
+std = ["no-std-compat/std"]
