@@ -5,7 +5,7 @@
 // We always pull in `std` during tests, because it's just easier to
 // write tests when you can assume you're on a capable platform
 #[cfg(all(test, not(feature = "std")))]
-compile_error!("Can only run tests with --feature std");
+compile_error!("Can only run tests with `--features std`");
 
 // Pull in a lightweight no-std "compatibility layer" in order to
 // avoid having to trouble ourselves with supporting both std and
