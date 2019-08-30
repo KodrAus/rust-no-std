@@ -30,7 +30,7 @@ pub fn write(mut w: impl fmt::Write, v: impl fmt::Debug) -> fmt::Result {
 // When we are building with memory allocations or the standard
 // library (which includes memory allocations), there may be
 // additional features our library supports.
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 mod alloc_support {
     use crate::write;
     use std::{
@@ -63,10 +63,7 @@ pub use self::alloc_support::*;
 mod tests {
     use super::*;
 
-    // We also don't need to use the prelude when compiling with std,
-    // which we are when we're doing tests.
-
-    // use std::prelude::v1::*;
+    use std::prelude::v1::*;
 
     #[test]
     fn it_works() {
