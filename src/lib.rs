@@ -1,6 +1,9 @@
-// Declare our library as `no-std` unless the user opts in for std
-// features.
-#![cfg_attr(not(feature = "std"), no_std)]
+// Declare our library as `no-std` unconditionally, because we can. If
+// we didn't use no_std_compat which will handle this for us, we could
+// still pull in std in a similar fashion as core or alloc. This has
+// the advantage of disabling the std prelude so we don't accidentally
+// assume std by using something in that prelude.
+#![no_std]
 
 // We always pull in `std` during tests, because it's just easier to
 // write tests when you can assume you're on a capable platform
@@ -14,8 +17,7 @@ extern crate no_std_compat as std;
 
 // We often also have to import the prelude to obtain all the standard
 // functions, something that is normally automatically injected by the
-// compiler. On std this isn't needed, but usually it can be imported
-// unconditionally either way.
+// compiler.
 
 // use std::prelude::v1::*;
 
@@ -32,8 +34,8 @@ pub fn write(mut w: impl fmt::Write, v: impl fmt::Debug) -> fmt::Result {
 mod alloc_support {
     use crate::write;
     use std::{
-        string::String,
         fmt,
+        prelude::v1::*,
     };
 
     pub fn to_string(v: impl fmt::Debug) -> String {
