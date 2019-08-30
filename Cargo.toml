@@ -5,8 +5,13 @@ authors = ["Ashley Mannix <ashleymannix@live.com.au>"]
 publish = false
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+no-std-compat = "0.2.0"
 
 [features]
-# enable support for the standard library
-std = []
+# Enable support for memory allocations
+alloc = ["no-std-compat/alloc"]
+# Enable support for the complete standard library. It will also
+# enable the alloc feature so we can write unified code handling
+# platforms where memory allocations are available.
+std = ["no-std-compat/std", "alloc"]
