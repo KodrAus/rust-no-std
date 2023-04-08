@@ -1,0 +1,44 @@
+name: rust
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # The regular build; we run tests on each feature combination using `cargo hack`
+  check:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Install cargo-hack
+        run: cargo install cargo-hack
+
+      - name: Powerset
+        run: cargo hack test --feature-powerset
+
+  # The embedded build; we don't test here, just run a `cargo check` with no
+  # dev dependencies. It's common to use the standard library in tests to make
+  # them easier to write, so we just ensure a "real" downstream build will work
+  # without the standard library
+  embedded:
+    name: Build (embedded)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        run: |
+          rustup update nightly &&
+          rustup default nightly &&
+          rustup target add thumbv6m-none-eabi
+
+      - name: Install cargo-hack
+        run: cargo install cargo-hack
+
+      - name: Powerset
+        run: cargo hack check --each-feature --exclude-features std -Z avoid-dev-deps --target thumbv6m-none-eabi

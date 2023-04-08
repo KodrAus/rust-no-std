@@ -1,4 +1,4 @@
-# Building your no-std Rust library for a no-std target in CI [![Build Status](https://travis-ci.com/KodrAus/rust-no-std.svg?branch=master)](https://travis-ci.com/KodrAus/rust-no-std)
+# Building your no-std Rust library for a no-std target in CI [![rust](https://github.com/KodrAus/rust-no-std/actions/workflows/rust.yml/badge.svg)](https://github.com/KodrAus/rust-no-std/actions/workflows/rust.yml)
 
 This example demonstrates how to make sure your Rust library will actually build for a no-std target in CI.
 
