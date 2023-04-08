@@ -6,6 +6,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  # The regular build; we run tests on each feature combination using `cargo hack`
   check:
     name: Test
     runs-on: ubuntu-latest
@@ -19,6 +20,10 @@ jobs:
       - name: Powerset
         run: cargo hack test --feature-powerset
 
+  # The embedded build; we don't test here, just run a `cargo check` with no
+  # dev dependencies. It's common to use the standard library in tests to make
+  # them easier to write, so we just ensure a "real" downstream build will work
+  # without the standard library
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest
