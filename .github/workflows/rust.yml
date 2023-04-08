@@ -28,9 +28,9 @@ jobs:
 
       - name: Install Rust toolchain
         run: |
-          rustup target add thumbv6m-none-eabi &&
           rustup update nightly &&
-          rustup default nightly
+          rustup default nightly &&
+          rustup target add thumbv6m-none-eabi
 
       - name: Install cargo-hack
         run: cargo install cargo-hack
